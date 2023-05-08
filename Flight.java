@@ -45,6 +45,6 @@ public class Flight {
     }
 
     public String toString() {
-        return "FLight " + departure + " to " + landing + " on date " + depDate;
+        return "Flight " + departure + " to " + landing + " on date " + depDate;
     }
 }
