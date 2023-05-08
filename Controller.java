@@ -27,6 +27,8 @@ public class Controller {
         view.addResetHangarButtonListener(new ResetHangarListener());
         view.addReserveRunwayButtonListener(new ReserveRunwayListener());
         view.addResetRunwayButtonListener(new ResetRunwayListener());
+        view.addAddFlightButtonListener(new AddFlightListener());
+        view.addRemoveFlightButtonListener(new RemoveFlightListener());
     }
 
     private class ChangeMainPanelListener implements ActionListener {
@@ -239,6 +241,36 @@ public class Controller {
                     view.refreshRunwayList();
                 }
             }
+        }
+    }
+
+    private class AddFlightListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String dep = view.getDeparture();
+            String depD = view.getDepDate();
+            String lan = view.getLanding();
+            String lanD = view.getLanDate();
+            model.getFlightManagementSystem().addFlight(dep,lan,depD,lanD);
+            view.refreshFlights();
+        }
+    }
+
+    private class RemoveFlightListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String selected = view.getSelectedFlight();
+            String dep = selected.split(" ")[1];
+            String lan = selected.split(" ")[3];
+            String depD = selected.split(" ")[6];
+            ArrayList<Flight> flights = model.getFlightManagementSystem().getFlights();
+            for (int i = 0; i < flights.size(); i++) {
+                Flight f = flights.get(i);
+                if (dep.equals(f.getDeparture()) && lan.equals(f.getLanding()) && depD.equals(f.getDepDate())) {
+                    model.getFlightManagementSystem().removeFlight(f);
+                }
+            }
+            view.refreshFlights();
         }
     }
 }

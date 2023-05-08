@@ -32,6 +32,12 @@ public class View extends JPanel {
 
     private JTextArea reserveTextArea, reserveRunwayTextArea;
 
+    private JButton addFlight, removeFlight;
+
+    private JTextField departureField, landingField, departureDateField, landingDateField;
+
+    private JList<String> currentFlightsList;
+
     private JPanel passenger, plane, flight, currentPanel;
     public View(Model model) {
         this.model = model;
@@ -299,26 +305,26 @@ public class View extends JPanel {
                 JPanel generateFlightTextFieldContainer = new JPanel();
                 generateFlight.add(generateFlightTextFieldContainer);
 
-                    JTextField departureField = new JTextField();
+                    departureField = new JTextField();
                     departureField.setPreferredSize(new Dimension(70,30));
                     generateFlightTextFieldContainer.add(departureField);
-                    JTextField landingField = new JTextField();
+                    landingField = new JTextField();
                     landingField.setPreferredSize(new Dimension(70,30));
                     generateFlightTextFieldContainer.add(landingField);
-                    JTextField departureDateField = new JTextField();
+                    departureDateField = new JTextField();
                     departureDateField.setPreferredSize(new Dimension(70,30));
                     generateFlightTextFieldContainer.add(departureDateField);
-                    JTextField landingDateField = new JTextField();
+                    landingDateField = new JTextField();
                     landingDateField.setPreferredSize(new Dimension(70,30));
                     generateFlightTextFieldContainer.add(landingDateField);
 
                 JPanel generateFlightButtonContainer = new JPanel();
                 generateFlight.add(generateFlightButtonContainer);
 
-                    JButton addFlight = new JButton("Add Flight");
+                    addFlight = new JButton("Add Flight");
                     addFlight.setPreferredSize(new Dimension(150,30));
                     generateFlightButtonContainer.add(addFlight);
-                    JButton removeFlight = new JButton("Remove Flight");
+                    removeFlight = new JButton("Remove Flight");
                     removeFlight.setPreferredSize(new Dimension(150,30));
                     generateFlightButtonContainer.add(removeFlight);
 
@@ -327,7 +333,7 @@ public class View extends JPanel {
             currentFlights.setMaximumSize(new Dimension(420,300));
             flight.add(currentFlights);
 
-                JList<String> currentFlightsList = new JList<>();
+                currentFlightsList = new JList<>();
                 currentFlightsList.setPreferredSize(new Dimension(350,250));
                 currentFlightsList.setMaximumSize(new Dimension(350,250));
                 currentFlightsList.setMinimumSize(new Dimension(350,250));
@@ -446,6 +452,10 @@ public class View extends JPanel {
         resetRunwayButton.addActionListener(listener);
     }
 
+    public void addAddFlightButtonListener(ActionListener listener) {addFlight.addActionListener(listener);}
+
+    public void addRemoveFlightButtonListener(ActionListener listener) {removeFlight.addActionListener(listener);}
+
     private JPanel pickMainPanel(int SystemID) {
         if (SystemID == 0) {
             return passenger;
@@ -512,6 +522,17 @@ public class View extends JPanel {
         repaint();
     }
 
+    public void refreshFlights() {
+        ArrayList<Flight> flightList = model.getFlightManagementSystem().getFlights();
+        String[] flights = new String[model.getFlightManagementSystem().getFlights().size()];
+        for (int i = 0; i < flightList.size(); i++) {
+            flights[i] = flightList.get(i).toString();
+        }
+        currentFlightsList.setListData(flights);
+        revalidate();
+        repaint();
+    }
+
     public String getPlaneCodeForRemoval() {
         return (String) codeSpinner.getValue();
     }
@@ -562,6 +583,26 @@ public class View extends JPanel {
 
     public int getCapacity() {
         return Integer.parseInt(capacityCount.getValue().toString());
+    }
+
+    public String getDeparture() {
+        return departureField.getText();
+    }
+
+    public String getLanding() {
+        return landingField.getText();
+    }
+
+    public String getDepDate() {
+        return departureDateField.getText();
+    }
+
+    public String getLanDate() {
+        return landingDateField.getText();
+    }
+
+    public String getSelectedFlight() {
+        return currentFlightsList.getSelectedValue();
     }
 
 
