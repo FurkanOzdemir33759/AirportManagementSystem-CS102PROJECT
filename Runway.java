@@ -10,6 +10,11 @@ public class Runway {
 
     public void setOccupation(Plane occupation) {
         this.occupation = occupation;
+        if (occupation != null) {
+            setUsed(true);
+        } else {
+            setUsed(false);
+        }
     }
 
     public void setUsed(boolean used) {
@@ -26,5 +31,9 @@ public class Runway {
 
     public int getCode() {
         return code;
+    }
+
+    public String toString() {
+        return (occupation == null) ? "Runway " + code + " is empty." : "Runway " + code + " is reserved by " + occupation.toString();
     }
 }

@@ -26,6 +26,12 @@ public class View extends JPanel {
 
     private JList<String> planeList;
 
+    private JButton addHangarButton, removeHangarButton, addRunwayButton, removeRunwayButton, reserveHangarButton, resetHangarButton, reserveRunwayButton, resetRunwayButton;
+
+    private JTextField hangarCode, runwayCode;
+
+    private JTextArea reserveTextArea, reserveRunwayTextArea;
+
     private JPanel passenger, plane, flight, currentPanel;
     public View(Model model) {
         this.model = model;
@@ -215,52 +221,52 @@ public class View extends JPanel {
                 JPanel hangarContainer = new JPanel();
                 airport.add(hangarContainer);
 
-                    JTextField hangarCode = new JTextField();
+                    hangarCode = new JTextField();
                     hangarCode.setPreferredSize(new Dimension(400,58));
                     hangarContainer.add(hangarCode);
-                    JButton addHangarButton = new JButton("Add Hangar");
+                    addHangarButton = new JButton("Add Hangar");
                     addHangarButton.setPreferredSize(new Dimension(400,57));
                     hangarContainer.add(addHangarButton);
-                    JButton removeHangarButton = new JButton("Remove Hangar");
+                    removeHangarButton = new JButton("Remove Hangar");
                     removeHangarButton.setPreferredSize(new Dimension(400,57));
                     hangarContainer.add(removeHangarButton);
 
                 JPanel runwayContainer = new JPanel();
                 airport.add(runwayContainer);
 
-                    JTextField runwayCode = new JTextField();
+                    runwayCode = new JTextField();
                     runwayCode.setPreferredSize(new Dimension(400,58));
                     runwayContainer.add(runwayCode);
-                    JButton addRunwayButton = new JButton("Add Runway");
+                    addRunwayButton = new JButton("Add Runway");
                     addRunwayButton.setPreferredSize(new Dimension(400,57));
                     runwayContainer.add(addRunwayButton);
-                    JButton removeRunwayButton = new JButton("Remove Runway");
+                    removeRunwayButton = new JButton("Remove Runway");
                     removeRunwayButton.setPreferredSize(new Dimension(400,57));
                     runwayContainer.add(removeRunwayButton);
 
                 JPanel reserveHangarContainer = new JPanel();
                 airport.add(reserveHangarContainer);
 
-                    JTextArea reserveTextArea = new JTextArea();
+                    reserveTextArea = new JTextArea();
                     reserveTextArea.setPreferredSize(new Dimension(400,58));
                     reserveHangarContainer.add(reserveTextArea);
-                    JButton reserveHangarButton = new JButton("Reserve Hangar");
+                    reserveHangarButton = new JButton("Reserve Hangar");
                     reserveHangarButton.setPreferredSize(new Dimension(400,57));
                     reserveHangarContainer.add(reserveHangarButton);
-                    JButton resetHangarButton = new JButton("Reset Hangar");
+                    resetHangarButton = new JButton("Reset Hangar");
                     resetHangarButton.setPreferredSize(new Dimension(400,57));
                     reserveHangarContainer.add(resetHangarButton);
 
                 JPanel reserveRunwayContainer = new JPanel();
                 airport.add(reserveRunwayContainer);
 
-                    JTextArea reserveRunwayTextArea = new JTextArea();
+                    reserveRunwayTextArea = new JTextArea();
                     reserveRunwayTextArea.setPreferredSize(new Dimension(400,58));
                     reserveRunwayContainer.add(reserveRunwayTextArea);
-                    JButton reserveRunwayButton = new JButton("Reserve Runway");
+                    reserveRunwayButton = new JButton("Reserve Runway");
                     reserveRunwayButton.setPreferredSize(new Dimension(400,57));
                     reserveRunwayContainer.add(reserveRunwayButton);
-                    JButton resetRunwayButton = new JButton("Reset Runway");
+                    resetRunwayButton = new JButton("Reset Runway");
                     resetRunwayButton.setPreferredSize(new Dimension(400,57));
                     reserveRunwayContainer.add(resetRunwayButton);
 
@@ -408,6 +414,38 @@ public class View extends JPanel {
         removePlaneButton.addActionListener(listener);
     }
 
+    public void addAddHangarButtonListener(ActionListener listener) {
+        addHangarButton.addActionListener(listener);
+    }
+
+    public void addRemoveHangarButtonListener(ActionListener listener) {
+        removeHangarButton.addActionListener(listener);
+    }
+
+    public void addAddRunwayButtonListener(ActionListener listener) {
+        addRunwayButton.addActionListener(listener);
+    }
+
+    public void addRemoveRunwayButtonListener(ActionListener listener) {
+        removeRunwayButton.addActionListener(listener);
+    }
+
+    public void addReserveHangarButtonListener(ActionListener listener) {
+        reserveHangarButton.addActionListener(listener);
+    }
+
+    public void addResetHangarButtonListener(ActionListener listener) {
+        resetHangarButton.addActionListener(listener);
+    }
+
+    public void addReserveRunwayButtonListener(ActionListener listener) {
+        reserveRunwayButton.addActionListener(listener);
+    }
+
+    public void addResetRunwayButtonListener(ActionListener listener) {
+        resetRunwayButton.addActionListener(listener);
+    }
+
     private JPanel pickMainPanel(int SystemID) {
         if (SystemID == 0) {
             return passenger;
@@ -418,10 +456,10 @@ public class View extends JPanel {
         }
     }
 
-    public void refreshPassengerList(ArrayList<Passenger> passengerArrayList) {
-        String[] passengersAsStringArray = new String[passengerArrayList.size()];
-        for (int i = 0; i < passengerArrayList.size(); i++) {
-            Passenger p = passengerArrayList.get(i);
+    public void refreshPassengerList() {
+        String[] passengersAsStringArray = new String[model.getPassengerManagementSystem().getPassengerList().size()];
+        for (int i = 0; i < model.getPassengerManagementSystem().getPassengerList().size(); i++) {
+            Passenger p = model.getPassengerManagementSystem().getPassengerList().get(i);
             if (p instanceof BusinessPassenger) {
                 passengersAsStringArray[i] = ((BusinessPassenger) p).toString();
             } else if (p instanceof EconomyPassenger) {
@@ -452,12 +490,42 @@ public class View extends JPanel {
         repaint();
     }
 
+    public void refreshHangarList() {
+        ArrayList<Hangar> hangarList = model.getPlaneManagementSystem().getHangarList();
+        String hangars = "";
+        for (int i = 0; i < hangarList.size(); i++) {
+            hangars = hangars + hangarList.get(i).toString() + "\n";
+        }
+        reserveTextArea.setText(hangars);
+        revalidate();
+        repaint();
+    }
+
+    public void refreshRunwayList() {
+        ArrayList<Runway> runwayList = model.getPlaneManagementSystem().getRunwayList();
+        String runways = "";
+        for (int i = 0; i < runwayList.size(); i++) {
+            runways = runways + runwayList.get(i).toString() + "\n";
+        }
+        reserveRunwayTextArea.setText(runways);
+        revalidate();
+        repaint();
+    }
+
     public String getPlaneCodeForRemoval() {
         return (String) codeSpinner.getValue();
     }
 
     public String getIDFromPassengerList() {
         return findID(passengerList.getSelectedValue());
+    }
+
+    public int getHangarID() {
+        return Integer.parseInt(hangarCode.getText());
+    }
+
+    public int getRunwayID() {
+        return Integer.parseInt(runwayCode.getText());
     }
 
     private String findID(String s) {

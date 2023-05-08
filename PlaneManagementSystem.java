@@ -30,8 +30,13 @@ public class PlaneManagementSystem {
         hangarList.add(h);
     }
 
-    public void removeHangar(Hangar h) {
-        hangarList.remove(h);
+
+    public void removeHangarById(int id) {
+        for (int i = 0; i < hangarList.size(); i++) {
+            if (hangarList.get(i).getCode() == id) {
+                hangarList.remove(i);
+            }
+        }
     }
 
     public ArrayList<Hangar> getHangarList() {
@@ -42,8 +47,12 @@ public class PlaneManagementSystem {
         runwayList.add(r);
     }
 
-    public void removeRunway(Runway r) {
-        runwayList.remove(r);
+    public void removeRunwayById(int id) {
+        for (int i = 0; i < runwayList.size(); i++) {
+            if (runwayList.get(i).getCode() == id) {
+                runwayList.remove(i);
+            }
+        }
     }
 
     public ArrayList<Runway> getRunwayList() {

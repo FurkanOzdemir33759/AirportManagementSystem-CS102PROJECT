@@ -22,9 +22,19 @@ public class Hangar {
 
     public void setOccupation(Plane p) {
         occupation = p;
+        if (p != null) {
+            setReserved(true);
+        } else {
+            setReserved(false);
+        }
     }
 
     public void setReserved(boolean newValue) {
         isReserved = newValue;
+    }
+
+
+    public String toString() {
+        return (occupation == null) ? "Hangar " + code + " is empty." : "Hangar " + code + " is being used by " + occupation.toString();
     }
 }

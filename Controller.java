@@ -19,15 +19,23 @@ public class Controller {
         view.addUpdateUserButtonListener(new UpdateUserListener());
         view.addAddPlaneButtonListener(new AddPlaneListener());
         view.addRemovePlaneButtonListener(new RemovePlaneListener());
+        view.addAddHangarButtonListener(new AddHangarListener());
+        view.addRemoveHangarButtonListener(new RemoveHangarListener());
+        view.addAddRunwayButtonListener(new AddRunwayListener());
+        view.addRemoveRunwayButtonListener(new RemoveRunwayListener());
+        view.addReserveHangarButtonListener(new ReserveHangarListener());
+        view.addResetHangarButtonListener(new ResetHangarListener());
+        view.addReserveRunwayButtonListener(new ReserveRunwayListener());
+        view.addResetRunwayButtonListener(new ResetRunwayListener());
     }
 
     private class ChangeMainPanelListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            JButton src =(JButton) e.getSource();
+            JButton src = (JButton) e.getSource();
             String name = src.getName();
             if (name.equals("FMSButton")) {
                 model.setWhichSystemToShow(2);
-            } else if(name.equals("AMSButton")) {
+            } else if (name.equals("AMSButton")) {
                 model.setWhichSystemToShow(1);
             } else {
                 model.setWhichSystemToShow(0);
@@ -47,17 +55,17 @@ public class Controller {
                 intUserLuggageCount = Integer.parseInt(view.getUserLuggageCount());
                 intUserYearOfBirth = Integer.parseInt(view.getUserYearOfBirth());
                 Random random = new Random();
-                String id = "P" + random.nextInt(100000,1000000) + intUserLuggageCount + intUserYearOfBirth + userName.charAt(0) + userSurname.charAt(0);
+                String id = "P" + random.nextInt(100000, 1000000) + intUserLuggageCount + intUserYearOfBirth + userName.charAt(0) + userSurname.charAt(0);
                 if (userType.equals("Business")) {
-                    model.getPassengerManagementSystem().addPassenger(new BusinessPassenger(id,userName,userSurname,intUserLuggageCount,intUserYearOfBirth));
+                    model.getPassengerManagementSystem().addPassenger(new BusinessPassenger(id, userName, userSurname, intUserLuggageCount, intUserYearOfBirth));
                 } else if (userType.equals("Economy")) {
-                    model.getPassengerManagementSystem().addPassenger(new EconomyPassenger(id,userName,userSurname,intUserLuggageCount,intUserYearOfBirth));
+                    model.getPassengerManagementSystem().addPassenger(new EconomyPassenger(id, userName, userSurname, intUserLuggageCount, intUserYearOfBirth));
                 } else {
-                    model.getPassengerManagementSystem().addPassenger(new FamilyPassenger(id,userName,userSurname,intUserLuggageCount,intUserYearOfBirth));
+                    model.getPassengerManagementSystem().addPassenger(new FamilyPassenger(id, userName, userSurname, intUserLuggageCount, intUserYearOfBirth));
                 }
-                view.refreshPassengerList(model.getPassengerManagementSystem().getPassengerList());
+                view.refreshPassengerList();
             } catch (Exception exception) {
-                JOptionPane.showMessageDialog(view,"Either luggage count or year of birth is not valid","Error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(view, "Either luggage count or year of birth is not valid", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         }
@@ -71,7 +79,7 @@ public class Controller {
                     model.getPassengerManagementSystem().removePassenger(i);
                 }
             }
-            view.refreshPassengerList(model.getPassengerManagementSystem().getPassengerList());
+            view.refreshPassengerList();
         }
     }
 
@@ -86,12 +94,12 @@ public class Controller {
             try {
                 intUserLuggageCount = Integer.parseInt(view.getUserLuggageCount());
                 intUserYearOfBirth = Integer.parseInt(view.getUserYearOfBirth());
-                model.getPassengerManagementSystem().updatePassengerByID(IDToBeUpdated,userName,userSurname,userType,intUserLuggageCount,intUserYearOfBirth);
+                model.getPassengerManagementSystem().updatePassengerByID(IDToBeUpdated, userName, userSurname, userType, intUserLuggageCount, intUserYearOfBirth);
 
             } catch (Exception exception) {
-                JOptionPane.showMessageDialog(view,"Either luggage count or year of birth is not valid","Error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(view, "Either luggage count or year of birth is not valid", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            view.refreshPassengerList(model.getPassengerManagementSystem().getPassengerList());
+            view.refreshPassengerList();
         }
     }
 
@@ -100,7 +108,7 @@ public class Controller {
         public void actionPerformed(ActionEvent e) {
             String id = view.getPlaneCode();
             int capacity = view.getCapacity();
-            model.getPlaneManagementSystem().addPlane(new Plane(id,capacity));
+            model.getPlaneManagementSystem().addPlane(new Plane(id, capacity));
             view.refreshPlaneList();
         }
     }
@@ -109,13 +117,130 @@ public class Controller {
         @Override
         public void actionPerformed(ActionEvent e) {
             String id = view.getPlaneCodeForRemoval();
-            System.out.println(id);
             for (int i = 0; i < model.getPlaneManagementSystem().getPlaneList().size(); i++) {
                 if (model.getPlaneManagementSystem().getPlaneList().get(i).getId().equals(id)) {
                     model.getPlaneManagementSystem().removePlane(model.getPlaneManagementSystem().getPlaneList().get(i));
+                    break;
+                }
+            }
+            for (int i = 0; i < model.getPlaneManagementSystem().getHangarList().size(); i++) {
+                if (model.getPlaneManagementSystem().getHangarList().get(i).getOccupation() != null && model.getPlaneManagementSystem().getHangarList().get(i).getOccupation().getId().equals(id)) {
+                    model.getPlaneManagementSystem().getHangarList().get(i).setOccupation(null);
+                    break;
+                }
+            }
+            for (int i = 0; i < model.getPlaneManagementSystem().getRunwayList().size(); i++) {
+                if (model.getPlaneManagementSystem().getRunwayList().get(i).getOccupation() != null && model.getPlaneManagementSystem().getRunwayList().get(i).getOccupation().getId().equals(id)) {
+                    model.getPlaneManagementSystem().getRunwayList().get(i).setOccupation(null);
+                    break;
                 }
             }
             view.refreshPlaneList();
+            view.refreshHangarList();
+            view.refreshRunwayList();
+        }
+    }
+
+    private class AddHangarListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int id = view.getHangarID();
+            model.getPlaneManagementSystem().addHangar(new Hangar(id));
+            view.refreshHangarList();
+        }
+    }
+
+    private class RemoveHangarListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int id = view.getHangarID();
+            model.getPlaneManagementSystem().removeHangarById(id);
+            view.refreshHangarList();
+        }
+    }
+
+    private class AddRunwayListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int id = view.getRunwayID();
+            model.getPlaneManagementSystem().addRunway(new Runway(id));
+            view.refreshRunwayList();
+        }
+    }
+
+    private class RemoveRunwayListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int id = view.getRunwayID();
+            model.getPlaneManagementSystem().removeRunwayById(id);
+            view.refreshRunwayList();
+        }
+    }
+
+    private class ReserveHangarListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int id = view.getHangarID();
+            String planeID = view.getPlaneCodeForRemoval();
+            for (int i = 0; i < model.getPlaneManagementSystem().getPlaneList().size(); i++) {
+                if (model.getPlaneManagementSystem().getPlaneList().get(i).getId().equals(planeID)) {
+                    for (int j = 0; j < model.getPlaneManagementSystem().getHangarList().size(); j++) {
+                        if (model.getPlaneManagementSystem().getHangarList().get(j).getCode() == id) {
+                            model.getPlaneManagementSystem().getPlaneList().get(i).setHangar(model.getPlaneManagementSystem().getHangarList().get(j));
+                            model.getPlaneManagementSystem().getHangarList().get(j).setOccupation(model.getPlaneManagementSystem().getPlaneList().get(i));
+                            view.refreshHangarList();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private class ResetHangarListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int id = view.getHangarID();
+            for (int i = 0; i < model.getPlaneManagementSystem().getHangarList().size(); i++) {
+                if (id == model.getPlaneManagementSystem().getHangarList().get(i).getCode()) {
+                    model.getPlaneManagementSystem().getHangarList().get(i).setOccupation(null);
+                    view.refreshHangarList();
+                    break;
+                }
+            }
+        }
+    }
+
+    private class ReserveRunwayListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int id = view.getRunwayID();
+            String planeID = view.getPlaneCodeForRemoval();
+            for (int i = 0; i < model.getPlaneManagementSystem().getRunwayList().size(); i++) {
+                if (id == model.getPlaneManagementSystem().getRunwayList().get(i).getCode()) {
+                    for (int j = 0; j < model.getPlaneManagementSystem().getPlaneList().size(); j++) {
+                        if (model.getPlaneManagementSystem().getPlaneList().get(j).getId().equals(planeID)) {
+                            model.getPlaneManagementSystem().getPlaneList().get(j).setRunway(model.getPlaneManagementSystem().getRunwayList().get(i));
+                            model.getPlaneManagementSystem().getRunwayList().get(i).setOccupation(model.getPlaneManagementSystem().getPlaneList().get(j));
+                            view.refreshRunwayList();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private class ResetRunwayListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int id = view.getRunwayID();
+            for (int i = 0; i < model.getPlaneManagementSystem().getRunwayList().size(); i++) {
+                if (model.getPlaneManagementSystem().getRunwayList().get(i).getCode() == id) {
+                    model.getPlaneManagementSystem().getRunwayList().get(i).setOccupation(null);
+                    view.refreshRunwayList();
+                }
+            }
         }
     }
 }
+
+
