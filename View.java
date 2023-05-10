@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,7 +37,13 @@ public class View extends JPanel {
 
     private JTextField departureField, landingField, departureDateField, landingDateField;
 
-    private JList<String> currentFlightsList;
+    private JLabel ticketPriceLabel, ticketPriceTag;
+
+    private JList<String> currentFlightsList, ticketList;
+
+    private JTextField passengerIDField;
+
+    private JButton buyTicketButton, cancelTicketButton;
 
     private JPanel passenger, plane, flight, currentPanel;
     public View(Model model) {
@@ -344,7 +351,7 @@ public class View extends JPanel {
             manageTickets.setMaximumSize(new Dimension(460,600));
             flight.add(manageTickets);
 
-                JList<String> ticketList = new JList<>();
+                ticketList = new JList<>();
                 ticketList.setPreferredSize(new Dimension(400,250));
                 manageTickets.add(ticketList);
 
@@ -362,27 +369,27 @@ public class View extends JPanel {
                         passengerIDLabel.setVerticalAlignment(JLabel.BOTTOM);
                         passengerIDLabel.setPreferredSize(new Dimension(120,130));
                         buyTicketLabelContainer.add(passengerIDLabel);
-                        JLabel emptyLabel = new JLabel();
-                        emptyLabel.setPreferredSize(new Dimension(90,150));
+                        JLabel emptyLabel = new JLabel("");
+                        emptyLabel.setPreferredSize(new Dimension(1,150));
                         buyTicketLabelContainer.add(emptyLabel);
-                        JLabel ticketPriceLabel = new JLabel("Ticket Price:");
-                        ticketPriceLabel.setPreferredSize(new Dimension(75,150));
+                        ticketPriceLabel = new JLabel("Ticket Price:");
+                        ticketPriceLabel.setPreferredSize(new Dimension(100,150));
                         buyTicketLabelContainer.add(ticketPriceLabel);
-                        JLabel ticketPriceTag = new JLabel("15.43TL");
-                        ticketPriceTag.setPreferredSize(new Dimension(75,150));
+                        ticketPriceTag = new JLabel("");
+                        ticketPriceTag.setPreferredSize(new Dimension(150,150));
                         buyTicketLabelContainer.add(ticketPriceTag);
 
                     JPanel buyTicketButtonContainer = new JPanel();
                     buyTicketButtonContainer.setMaximumSize(new Dimension(400,150));
                     buyTicketPanel.add(buyTicketButtonContainer);
 
-                        JTextField passengerIDField = new JTextField();
+                        passengerIDField = new JTextField();
                         passengerIDField.setPreferredSize(new Dimension(120,30));
                         buyTicketButtonContainer.add(passengerIDField);
-                        JButton buyTicketButton = new JButton("Buy Ticket");
+                        buyTicketButton = new JButton("Buy Ticket");
                         buyTicketButton.setPreferredSize(new Dimension(120,30));
                         buyTicketButtonContainer.add(buyTicketButton);
-                        JButton cancelTicketButton = new JButton("Cancel Ticket");
+                        cancelTicketButton = new JButton("Cancel Ticket");
                         cancelTicketButton.setPreferredSize(new Dimension(120,30));
                         buyTicketButtonContainer.add(cancelTicketButton);
 
@@ -455,6 +462,14 @@ public class View extends JPanel {
     public void addAddFlightButtonListener(ActionListener listener) {addFlight.addActionListener(listener);}
 
     public void addRemoveFlightButtonListener(ActionListener listener) {removeFlight.addActionListener(listener);}
+
+    public void addPlaneSelectedListener(ListSelectionListener listener) {planeList.addListSelectionListener(listener);}
+
+    public void addTicketSelectedListener(ListSelectionListener listener) {ticketList.addListSelectionListener(listener);}
+
+    public void addBuyTicketButtonListener(ActionListener listener) {buyTicketButton.addActionListener(listener);}
+
+    public void addCancelTicketButtonListener(ActionListener listener) {cancelTicketButton.addActionListener(listener);}
 
     private JPanel pickMainPanel(int SystemID) {
         if (SystemID == 0) {
@@ -533,6 +548,23 @@ public class View extends JPanel {
         repaint();
     }
 
+    public void refreshTickets() {
+        ArrayList<Ticket> ticketList = model.getSelectedPlane().getTickets();
+        String[] tickets = new String[ticketList.size()];
+        for (int i = 0; i < ticketList.size(); i++) {
+            tickets[i] = ticketList.get(i).toString();
+        }
+        this.ticketList.setListData(tickets);
+        revalidate();
+        repaint();
+    }
+
+    public void refreshPrice() {
+        ticketPriceTag.setText("" + model.getTicketPrice() + " TRY");
+        revalidate();
+        repaint();
+    }
+
     public String getPlaneCodeForRemoval() {
         return (String) codeSpinner.getValue();
     }
@@ -603,6 +635,14 @@ public class View extends JPanel {
 
     public String getSelectedFlight() {
         return currentFlightsList.getSelectedValue();
+    }
+
+    public String getSelectedPlane() {return planeList.getSelectedValue();}
+
+    public int getSeatNumber() {return ticketList.getSelectedIndex();}
+
+    public String getIDFromTicketMenu() {
+        return passengerIDField.getText();
     }
 
 

@@ -7,12 +7,18 @@ public class Model {
 
     private FlightManagementSystem flightManagementSystem;
 
+    private Plane selectedPlane;
+
+    private double ticketPrice;
+
     private int whichSystemToShow;
 
     public Model() {
         passengerManagementSystem = new PassengerManagementSystem();
         planeManagementSystem = new PlaneManagementSystem();
         flightManagementSystem = new FlightManagementSystem();
+        selectedPlane = null;
+        ticketPrice = 0.0;
         whichSystemToShow = 0;
     }
 
@@ -26,6 +32,22 @@ public class Model {
 
     public void setWhichSystemToShow(int systemID) {
         whichSystemToShow = systemID;
+    }
+
+    public void setSelectedPlane(Plane p) {
+        selectedPlane = p;
+    }
+
+    public Plane getSelectedPlane() {
+        return selectedPlane;
+    }
+
+    public void setTicketPrice(double d) {
+        ticketPrice = d;
+    }
+
+    public double getTicketPrice() {
+        return ticketPrice;
     }
 
     public int getWhichSystemToShow() {

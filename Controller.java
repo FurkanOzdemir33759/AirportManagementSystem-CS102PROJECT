@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -29,6 +31,10 @@ public class Controller {
         view.addResetRunwayButtonListener(new ResetRunwayListener());
         view.addAddFlightButtonListener(new AddFlightListener());
         view.addRemoveFlightButtonListener(new RemoveFlightListener());
+        view.addPlaneSelectedListener(new PlaneSelectedListener());
+        view.addTicketSelectedListener(new SeatSelectedListener());
+        view.addBuyTicketButtonListener(new BuyTicketListener());
+        view.addCancelTicketButtonListener(new CancelTicketListener());
     }
 
     private class ChangeMainPanelListener implements ActionListener {
@@ -57,7 +63,7 @@ public class Controller {
                 intUserLuggageCount = Integer.parseInt(view.getUserLuggageCount());
                 intUserYearOfBirth = Integer.parseInt(view.getUserYearOfBirth());
                 Random random = new Random();
-                String id = "P" + random.nextInt(100000, 1000000) + intUserLuggageCount + intUserYearOfBirth + userName.charAt(0) + userSurname.charAt(0);
+                String id = "P" + random.nextInt(100, 1000);
                 if (userType.equals("Business")) {
                     model.getPassengerManagementSystem().addPassenger(new BusinessPassenger(id, userName, userSurname, intUserLuggageCount, intUserYearOfBirth));
                 } else if (userType.equals("Economy")) {
@@ -271,6 +277,67 @@ public class Controller {
                 }
             }
             view.refreshFlights();
+        }
+    }
+
+    private class PlaneSelectedListener implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            String planeCode = view.getSelectedPlane();
+            planeCode = planeCode.split(" ")[1];
+            for (int i = 0; i < model.getPlaneManagementSystem().getPlaneList().size(); i++) {
+                if (model.getPlaneManagementSystem().getPlaneList().get(i).getId().equals(planeCode)) {
+                    model.setSelectedPlane(model.getPlaneManagementSystem().getPlaneList().get(i));
+                    break;
+                }
+            }
+            view.refreshTickets();
+        }
+    }
+
+    private class SeatSelectedListener implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            int seatNumber = view.getSeatNumber();
+            model.setTicketPrice(model.getSelectedPlane().getTickets().get(seatNumber).getPrice());
+            view.refreshPrice();
+        }
+    }
+
+    private class BuyTicketListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String passengerID = view.getIDFromTicketMenu();
+            for (int i = 0; i < model.getPassengerManagementSystem().getPassengerList().size(); i++) {
+                if (model.getPassengerManagementSystem().getPassengerList().get(i).getID().equals(passengerID)) {
+                    int ticketNo = view.getSeatNumber();
+                    if (model.getSelectedPlane().getTickets().get(ticketNo) instanceof VIPTicket) {
+                        if (model.getPassengerManagementSystem().getPassengerList().get(i).getType().equals("Business")) {
+                            ((VIPTicket) model.getSelectedPlane().getTickets().get(ticketNo)).setPassenger(model.getPassengerManagementSystem().getPassengerList().get(i));
+                        } else {
+                            JOptionPane.showMessageDialog(view,"VIP Tickets can't be purchased by economy or family passengers","Error",JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else {
+                        ((RegularTicket) model.getSelectedPlane().getTickets().get(ticketNo)).setPassenger(model.getPassengerManagementSystem().getPassengerList().get(i));
+                        if (model.getPassengerManagementSystem().getPassengerList().get(i) instanceof FamilyPassenger) {
+                            model.setTicketPrice(((RegularTicket) model.getSelectedPlane().getTickets().get(ticketNo)).getPrice());
+                            JOptionPane.showConfirmDialog(view,"Family discount rate (%20) applied. New price is " + model.getTicketPrice() + "TRY. Please check new price tag by selecting your ticket.","Discount",JOptionPane.DEFAULT_OPTION);
+                        }
+                    }
+                }
+            }
+            view.refreshTickets();
+            view.refreshPrice();
+        }
+    }
+
+    private class CancelTicketListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int ticketNo = view.getSeatNumber();
+            model.getSelectedPlane().getTickets().get(ticketNo).setPassenger(null);
+            view.refreshTickets();
+            view.refreshPrice();
         }
     }
 }
